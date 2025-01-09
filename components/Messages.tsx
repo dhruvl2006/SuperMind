@@ -1,4 +1,3 @@
-// components/Messages.tsx
 import { useEffect, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
