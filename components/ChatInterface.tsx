@@ -16,6 +16,7 @@ const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const { currentChatId, addMessage, darkMode, setDarkMode } = useChat();
+  var userId = "test-user";
 
   const handleSendMessage = async () => {
     if (inputMessage.trim() && currentChatId) {
@@ -35,7 +36,7 @@ const ChatInterface = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userMessage: newMessage.text }),
+        body: JSON.stringify({ conversationId: currentChatId, userId: userId, userMessage: newMessage.text }),
       });
 
       const botResponse = {

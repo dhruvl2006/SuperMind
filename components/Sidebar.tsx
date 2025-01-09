@@ -18,10 +18,27 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
   const filteredChats = chats.filter((chat) =>
     chat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  var userId = localStorage.getItem("userId") || "";
+  if (!userId) {
+    fetch("/api/users", {
+      method: "POST",
+    }).then((res) => res.json()).then((data) => {
+      userId = data.userId;
+      localStorage.setItem("userId", userId);
+    });
+  }
 
-  const handleNewChat = () => {
+  const handleNewChat = async () => {
+    const response = await fetch("/api/conversations", {
+      method: "POST",
+      body: JSON.stringify({ userId: userId }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
     const newChat: Chat = {
-      id: Date.now().toString(),
+      id: data.id,
       title: "New Conversation",
       date: new Date().toLocaleDateString(),
       messages: [

@@ -1,19 +1,58 @@
+import Message from "@/models/message.modle";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request:NextRequest){
     const body = await request.json();
-    const uid = body.uid;
-    const conversationId = body.conversationId;
-    const userMessage = body.userMessage;
+    const { userId, conversationId, userMessage } = body;
+    if (!userId){
+        return NextResponse.json({ message: 'User ID is required!' }, { status: 400 });
+    }
+    if (!conversationId){
+        return NextResponse.json({ message: 'Conversation ID is required!' }, { status: 400 });
+    }
     if (!userMessage){
         return NextResponse.json({ message: 'Message is required!' }, { status: 400 });
     }
+    new Message({
+        userId,
+        conversationId,
+        sender: "user",
+        text: userMessage,
+    }).save();
     const analysis = await generateAnalysis(userMessage);
+    var messageId = "";
+    if (!analysis.error){
+        const message = new Message({
+            userId,
+            conversationId,
+            sender: "bot",
+            text: analysis.text,
+            stats: analysis.stats,
+        });
+        await message.save();
+    }
     const statusCode = analysis.error ? 500 : 200;
-    return NextResponse.json(analysis, { status: statusCode });
+    return NextResponse.json({
+        ...analysis,
+        _id: messageId,
+        conversationId,
+    }, { status: statusCode });
 }
 
 const generateAnalysis = async (inputValue:string) => {
+
+    return {
+        error: false,
+        text: "This is a sample response from the bot",
+        post_type: "text",
+        stats: {
+            likes: [0],
+            shares: [0],
+            comments: [0],
+            avg_sentiment_score: [0],
+        },
+    }
+
     const stream = false;
     const endpoint = `/lf/${process.env.LANGFLOW_ID}/api/v1/run/${process.env.FLOW_ID}?stream=${stream}`;
     const baseURL = "https://api.langflow.astra.datastax.com";
@@ -46,7 +85,6 @@ const generateAnalysis = async (inputValue:string) => {
         });
 
         const responseContent = await response.json();
-        // console.log("Response:", JSON.stringify(responseContent, null, 2));
         if (!response.ok) {
             throw new Error(
                 `${response.status} ${response.statusText} - ${JSON.stringify(
@@ -55,10 +93,24 @@ const generateAnalysis = async (inputValue:string) => {
             );
         }
         const responseMessage = responseContent.outputs[0].outputs[0].results.message;
+        const stats_blocks = responseMessage.content_blocks[0].contents[1];
+        var likes : number[] = [], shares: number[] = [], comments: number[] = [], avg_sentiment_scores: number[] = [];
+        stats_blocks.output.forEach((block:any) => {
+            likes.push(block.data.likes);
+            shares.push(block.data.shares);
+            comments.push(block.data.comments);
+            avg_sentiment_scores.push(block.data.sentiment_score);
+        });
         return {
             error: false,
             text: responseMessage.text,
-            stats: responseMessage.content_blocks[0].contents[1].output,
+            post_type: stats_blocks.tool_input.post_type,
+            stats: {
+                likes: likes,
+                shares: shares,
+                comments: comments,
+                avg_sentiment_score: avg_sentiment_scores,
+            },
         };
     } catch (error:any) {
         console.error("Request Error:", error.message);

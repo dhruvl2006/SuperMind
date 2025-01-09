@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Chat, Message } from "../types";
 
 interface ChatContextType {
@@ -19,6 +19,10 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    // TODO: fetch "/api/conversations/"
+  },[]);
 
   const addChat = (chat: Chat) => {
     setChats((prev) => [...prev, chat]);
