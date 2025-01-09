@@ -9,13 +9,15 @@ import { Sidebar } from "./Sidebar";
 import { Messages } from "./Messages";
 import { useChat } from "../context/ChatContext";
 
+const GEN_API_URL = "http://localhost:5000/api/gen";
+
 const ChatInterface = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const { currentChatId, addMessage, darkMode, setDarkMode } = useChat();
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (inputMessage.trim() && currentChatId) {
       const newMessage = {
         id: Date.now(),
@@ -28,17 +30,35 @@ const ChatInterface = () => {
       setInputMessage("");
       setIsTyping(true);
 
-      // Simulate AI response
-      setTimeout(() => {
-        const botResponse = {
-          id: Date.now() + 1,
-          text: "I understand your message. This is a demonstration response that shows typing indicators and smooth animations.",
-          sender: "bot" as const,
-          timestamp: new Date(),
-        };
-        setIsTyping(false);
+      const response = await fetch(GEN_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userMessage: newMessage.text }),
+      });
+
+      const botResponse = {
+        id: Date.now() + 1,
+        text: "",
+        sender: "bot" as const,
+        timestamp: new Date(),
+      }
+      
+      if (!response.ok) {
+        const error = await response.json();
+        console.error(error.message);
+        botResponse.text = `Error: ${error.message}`;
         addMessage(currentChatId, botResponse);
-      }, 2000);
+        setIsTyping(false);
+        return;
+      }
+
+      const agentResponse = await response.json();
+      botResponse.text = agentResponse.text;
+      // TODO: use agentResponse.stats to show graphs/charts
+      addMessage(currentChatId, botResponse);
+      setIsTyping(false);
     }
   };
 
