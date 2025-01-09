@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send } from 'lucide-react'
 
+const GEN_API_URL = "http://localhost:5000/api/gen";
+
 type Message = {
   id: number
   content: string
@@ -16,17 +18,33 @@ export function ChatInterface() {
   ])
   const [input, setInput] = useState("")
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
+      const userMessage = input;
       setMessages([...messages, { id: Date.now(), content: input, sender: "user" }])
       setInput("")
-      // Simulate bot response
-      setTimeout(() => {
+
+      const response = await fetch(GEN_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userMessage: userMessage }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        console.error(error.message);
         setMessages((prevMessages) => [
           ...prevMessages,
-          { id: Date.now(), content: "I'm a demo bot. I can't actually respond!", sender: "bot" },
+          { id: Date.now(), content: `Error: ${error.message}`, sender: "bot" },
         ])
-      }, 1000)
+        return;
+      }
+      const agentResponse = await response.json();
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { id: Date.now(), content: agentResponse.message, sender: "bot" },
+      ])
     }
   }
 
