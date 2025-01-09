@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useChat } from "../context/ChatContext";
@@ -44,7 +45,7 @@ export const Messages = ({ isTyping }: MessagesProps) => {
               } shadow-lg`}
             >
               <CardContent className="p-4">
-                <p
+                <ReactMarkdown
                   className={`text-base ${
                     message.sender === "user"
                       ? "text-white"
@@ -54,7 +55,7 @@ export const Messages = ({ isTyping }: MessagesProps) => {
                   }`}
                 >
                   {message.text}
-                </p>
+                </ReactMarkdown>
                 <span
                   className={`text-xs mt-2 block ${
                     message.sender === "user"
