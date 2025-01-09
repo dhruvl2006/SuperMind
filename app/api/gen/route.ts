@@ -1,4 +1,19 @@
-const generateAnalysis = async (inputValue) => {
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request:NextRequest){
+    const body = await request.json();
+    const uid = body.uid;
+    const conversationId = body.conversationId;
+    const userMessage = body.userMessage;
+    if (!userMessage){
+        return NextResponse.json({ message: 'Message is required!' }, { status: 400 });
+    }
+    const analysis = await generateAnalysis(userMessage);
+    const statusCode = analysis.error ? 500 : 200;
+    return NextResponse.json(analysis, { status: statusCode });
+}
+
+const generateAnalysis = async (inputValue:string) => {
     const stream = false;
     const endpoint = `/lf/${process.env.LANGFLOW_ID}/api/v1/run/${process.env.FLOW_ID}?stream=${stream}`;
     const baseURL = "https://api.langflow.astra.datastax.com";
@@ -31,7 +46,7 @@ const generateAnalysis = async (inputValue) => {
         });
 
         const responseContent = await response.json();
-        console.log("Response:", JSON.stringify(responseContent, null, 2));
+        // console.log("Response:", JSON.stringify(responseContent, null, 2));
         if (!response.ok) {
             throw new Error(
                 `${response.status} ${response.statusText} - ${JSON.stringify(
@@ -45,7 +60,7 @@ const generateAnalysis = async (inputValue) => {
             text: responseMessage.text,
             stats: responseMessage.content_blocks[0].contents[1].output,
         };
-    } catch (error) {
+    } catch (error:any) {
         console.error("Request Error:", error.message);
         return {
             error: true,
@@ -53,5 +68,3 @@ const generateAnalysis = async (inputValue) => {
         };
     }
 };
-
-export { generateAnalysis };

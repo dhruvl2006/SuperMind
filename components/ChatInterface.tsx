@@ -9,7 +9,7 @@ import { Sidebar } from "./Sidebar";
 import { Messages } from "./Messages";
 import { useChat } from "../context/ChatContext";
 
-const GEN_API_URL = "http://localhost:5000/api/gen";
+const GEN_API_URL = "/api/gen";
 
 const ChatInterface = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
