@@ -18,16 +18,17 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
   const filteredChats = chats.filter((chat) =>
     chat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  var userId = localStorage.getItem("userId") || "";
-  if (!userId) {
-    fetch("/api/users", {
-      method: "POST",
-    }).then((res) => res.json()).then((data) => {
-      userId = data.userId;
-      localStorage.setItem("userId", userId);
-    });
-  }
-
+  // var userId = localStorage.getItem("userId") || "test";
+  let userId = "test";
+  // if (!userId) {
+  //   fetch("/api/users", {
+  //     method: "POST",
+  //   }).then((res) => res.json()).then((data) => {
+  //     userId = data.userId;
+  //     localStorage.setItem("userId", userId);
+  //   });
+  // }
+  //
   const handleNewChat = async () => {
     const response = await fetch("/api/conversations", {
       method: "POST",
@@ -55,25 +56,22 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
 
   return (
     <div
-      className={`${
-        isOpen ? "w-80" : "w-0"
-      } transition-all duration-300 overflow-hidden border-r
+      className={`${isOpen ? "w-80" : "w-0"
+        } transition-all duration-300 overflow-hidden border-r
       ${darkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"}
       flex flex-col`}
     >
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2
-            className={`font-bold text-xl ${
-              darkMode ? "text-white" : "text-gray-800"
-            }`}
+            className={`font-bold text-xl ${darkMode ? "text-white" : "text-gray-800"
+              }`}
           >
             Conversations
           </h2>
           <Settings
-            className={`w-5 h-5 ${
-              darkMode ? "text-gray-400" : "text-gray-500"
-            } hover:text-gray-600 cursor-pointer`}
+            className={`w-5 h-5 ${darkMode ? "text-gray-400" : "text-gray-500"
+              } hover:text-gray-600 cursor-pointer`}
           />
         </div>
 
@@ -83,9 +81,8 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search chats..."
-            className={`pl-10 ${
-              darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-gray-50"
-            }`}
+            className={`pl-10 ${darkMode ? "bg-gray-700 text-white border-gray-600" : "bg-gray-50"
+              }`}
           />
         </div>
 
@@ -96,17 +93,15 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
                 key={chat.id}
                 onClick={() => setCurrentChatId(chat.id)}
                 className={`p-3 rounded-lg cursor-pointer transition-all duration-200
-                  ${
-                    currentChatId === chat.id
-                      ? darkMode
-                        ? "bg-gray-700"
-                        : "bg-gray-100"
-                      : ""
+                  ${currentChatId === chat.id
+                    ? darkMode
+                      ? "bg-gray-700"
+                      : "bg-gray-100"
+                    : ""
                   }
-                  ${
-                    darkMode
-                      ? "hover:bg-gray-700 text-gray-300"
-                      : "hover:bg-gray-100 text-gray-600"
+                  ${darkMode
+                    ? "hover:bg-gray-700 text-gray-300"
+                    : "hover:bg-gray-100 text-gray-600"
                   }`}
               >
                 <div className="flex items-center">
@@ -114,9 +109,8 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
                   <div>
                     <p className="font-medium">{chat.title}</p>
                     <p
-                      className={`text-xs ${
-                        darkMode ? "text-gray-400" : "text-gray-500"
-                      }`}
+                      className={`text-xs ${darkMode ? "text-gray-400" : "text-gray-500"
+                        }`}
                     >
                       {chat.date}
                     </p>

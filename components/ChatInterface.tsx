@@ -44,8 +44,9 @@ const ChatInterface = () => {
         text: "",
         sender: "bot" as const,
         timestamp: new Date(),
+        stats: undefined,
       }
-      
+
       if (!response.ok) {
         const error = await response.json();
         console.error(error.message);
@@ -57,6 +58,7 @@ const ChatInterface = () => {
 
       const agentResponse = await response.json();
       botResponse.text = agentResponse.text;
+      botResponse.stats = agentResponse.stats;
       // TODO: use agentResponse.stats to show graphs/charts
       addMessage(currentChatId, botResponse);
       setIsTyping(false);
@@ -65,19 +67,17 @@ const ChatInterface = () => {
 
   return (
     <div
-      className={`h-screen flex ${
-        darkMode ? "dark bg-gray-900" : "bg-gray-50"
-      }`}
+      className={`h-screen flex ${darkMode ? "dark bg-gray-900" : "bg-gray-50"
+        }`}
     >
       <Sidebar isOpen={sidebarOpen} />
 
       <div className="flex-1 flex flex-col">
         <div
           className={`p-4 border-b flex justify-between items-center
-            ${
-              darkMode
-                ? "bg-gray-800 border-gray-700"
-                : "bg-white border-gray-200"
+            ${darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200"
             }`}
         >
           <Button
@@ -107,10 +107,9 @@ const ChatInterface = () => {
 
         <div
           className={`p-6 border-t
-            ${
-              darkMode
-                ? "bg-gray-800 border-gray-700"
-                : "bg-white border-gray-200"
+            ${darkMode
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200"
             }`}
         >
           <div className="max-w-3xl mx-auto flex space-x-4">
@@ -119,9 +118,8 @@ const ChatInterface = () => {
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
               placeholder="Type your message..."
-              className={`${
-                darkMode ? "bg-gray-700 text-white border-gray-600" : ""
-              } text-base `}
+              className={`${darkMode ? "bg-gray-700 text-white border-gray-600" : ""
+                } text-base `}
             />
             <Button
               onClick={handleSendMessage}
