@@ -19,7 +19,6 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
     chat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
   // var userId = localStorage.getItem("userId") || "test";
-  const userId = "test";
   // if (!userId) {
   //   fetch("/api/users", {
   //     method: "POST",
@@ -30,16 +29,17 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
   // }
   //
   const handleNewChat = async () => {
-    const response = await fetch("/api/conversations", {
-      method: "POST",
-      body: JSON.stringify({ userId: userId }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
+    // const response = await fetch("/api/conversations", {
+    //   method: "POST",
+    //   body: JSON.stringify({ userId: userId }),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    // });
+    // const data = await response.json();
+    //
     const newChat: Chat = {
-      id: data.id,
+      id: Math.random().toString(6),
       title: "New Conversation",
       date: new Date().toLocaleDateString(),
       messages: [
