@@ -16,7 +16,7 @@ const ChatInterface = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const { currentChatId, addMessage, darkMode, setDarkMode } = useChat();
-  var userId = "test-user";
+  const userId = "test-user";
 
   const handleSendMessage = async () => {
     if (inputMessage.trim() && currentChatId) {

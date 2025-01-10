@@ -19,7 +19,7 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
     chat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
   // var userId = localStorage.getItem("userId") || "test";
-  let userId = "test";
+  const userId = "test";
   // if (!userId) {
   //   fetch("/api/users", {
   //     method: "POST",

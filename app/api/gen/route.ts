@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     text: userMessage,
   }).save();
   const analysis = await generateAnalysis(userMessage);
-  var messageId = "";
+  const messageId = "";
   if (!analysis.error) {
     const message = new Message({
       userId,
@@ -91,14 +91,23 @@ const generateAnalysis = async (inputValue: string) => {
         )}`
       );
     }
-    const responseMessage =
-      responseContent.outputs[0].outputs[0].results.message;
+    type StatsBlock = {
+      data: {
+        likes: number;
+        shares: number;
+        comments: number;
+        avg_sentiment_score: number;
+      };
+    };
+
+    console.log(JSON.stringify(responseContent));
+    const responseMessage = responseContent.outputs[0].outputs[0].results.message;
     const stats_blocks = responseMessage.content_blocks[0].contents[1];
-    var likes: number[] = [],
+    const likes: number[] = [],
       shares: number[] = [],
       comments: number[] = [],
       avg_sentiment_scores: number[] = [];
-    stats_blocks.output.forEach((block: any) => {
+    stats_blocks.output.forEach((block: StatsBlock) => {
       likes.push(block.data.likes);
       shares.push(block.data.shares);
       comments.push(block.data.comments);
@@ -115,11 +124,10 @@ const generateAnalysis = async (inputValue: string) => {
         avg_sentiment_score: avg_sentiment_scores,
       },
     };
-  } catch (error: any) {
-    console.error("Request Error:", error.message);
+  } catch {
+    console.error("Request Error:");
     return {
       error: true,
-      text: error.message ? error.message : "Something went wrong",
     };
   }
 };
