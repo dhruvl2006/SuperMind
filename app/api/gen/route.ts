@@ -102,7 +102,7 @@ const generateAnalysis = async (inputValue: string) => {
       likes.push(block.data.likes);
       shares.push(block.data.shares);
       comments.push(block.data.comments);
-      avg_sentiment_scores.push(block.data.sentiment_score);
+      avg_sentiment_scores.push(block.data.avg_sentiment_score);
     });
     return {
       error: false,
